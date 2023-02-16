@@ -6,7 +6,7 @@ Basically, an ELF Loader implemented as a dynamic library for Linux.
 ## Implementation
 The segv_handler function is a routine for handling the SIGSEGV signal.
 
-First, here's a picture to help you visualise what i'm trying to do.
+First, here's a picture to help you visualize what i'm trying to do.
 
 ![image](https://user-images.githubusercontent.com/95059633/219495497-0ef56954-ad5d-4521-9682-ce517cbd3c76.png)
 
