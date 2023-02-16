@@ -1,20 +1,24 @@
 # ELF-Loader
-Homework assignment for the Operating Systems Course. Basically, an ELF Loader implemented as a dynamic library for Linux.
+Homework assignment for the Operating Systems Course.
 
-# Implementation
-Functia segv_handler este un handler de tratare a semnalului SIGSEGV.
-Verificam daca pagina se gaseste intr-un segment sau nu; daca nu se gaseste,
-sau campul info->si_code este setat cu valoarea SEGV_ACCERR (permisiuni
-invalide), rulam handlerul default, folosind signal. Altfel, daca campul
-info->si_code sugereaza ca adresa nu este mapata, aflam offset-ul la care
-va trebui sa mapam.
+Basically, an ELF Loader implemented as a dynamic library for Linux.
 
-Pentru mapare, avem 3 cazuri. Daca intreaga pagina mapata depaseste file_size-ul,
-se mapeaza in zona respectiva folosind MAP_ANONYMOUS(zona va fi initializata 
-direct cu 0), ultimele 2 campuri fiind automat ignorate. Daca nu depaseste 
-file_size-ul, se mapeaza setand file descriptorul si campul offset, de la 
-care se va citi din fisier. Daca ne aflam intr-o pagina care este "intermediara"
-(adresa de start este inainte de file_size, insa pagina depaseste file_size),
-se mapeaza la fel ca in cazul anterior, insa va trebui sa initializam cu 0 
-zona de dupa file_size. La sfarsit se foloseste mprotect pentru schimbarea 
-permisiunilor potrivite segmentului respectiv.
+## Implementation
+The segv_handler function is a routine for handling the SIGSEGV signal.
+
+First, here's a picture to help you visualise what i'm trying to do.
+
+![image](https://user-images.githubusercontent.com/95059633/219495497-0ef56954-ad5d-4521-9682-ce517cbd3c76.png)
+
+We're talking about a demand paging mechanism, so first we verify if the page is within a segment or not. If not, or info->si_code = SEGV_ACCER (invalid permissions), we run the default handler, using the signal function. Otherwise, if the address is not mapped, we find out what's the offset where we need to map.
+
+For mapping, we have 3 cases:
+* If the whole page is located beyond file_size, we map using MAP_ANONYMOUS (which initializes with 0), the last 2 parameters being ignored.
+* If the page doesn't go over the file_size, we map setting the file descriptor and offset field.
+* If our page is "intermediate", meaning it starts before file_size ends but part of it goes beyond, we map like the previous case, but we will have to initialize with 0 what is beyond file_size. In the end, we call mprotect to change the permissions of the segments to the right ones.
+
+## Useful resources
+
+ - [Signal](https://ocw.cs.pub.ro/courses/so/laboratoare/laborator-04)
+ - [Managing Memory](https://ocw.cs.pub.ro/courses/so/laboratoare/laborator-05)
+ - [Virtual Memory](https://ocw.cs.pub.ro/courses/so/laboratoare/laborator-06)
